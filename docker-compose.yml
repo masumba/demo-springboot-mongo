@@ -1,0 +1,29 @@
+version: "3"
+networks:
+  spring-mongo-network:
+    driver: bridge
+services:
+  bookdb:
+    image: mongo:latest
+    container_name: bookdb
+    restart: on-failure
+    networks:
+      - spring-mongo-network
+    ports:
+      - 27018:27017
+    environment:
+      - MONGO_INITDB_DATABASE=springmongo
+  spring-mongo-v1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web-service
+    restart: "on-failure"
+    networks:
+      - spring-mongo-network
+    ports:
+      - 8080:8080
+    depends_on:
+      - bookdb
+    links:
+      - bookdb
